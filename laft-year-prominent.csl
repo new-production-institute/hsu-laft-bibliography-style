@@ -8,11 +8,11 @@
       <email>charles.parnot@gmail.com</email>
       <uri>http://twitter.com/cparnot</uri>
     </author>
-  <author>
-    <name>J.C. Mariscal-Melgar</name>
-    <email>jcm@hsu-hh.de</email>
-    <uri>https://www.hsu-hh.de/laft/mariscaljc</uri>
-  </author>
+    <author>
+      <name>J.C. Mariscal-Melgar</name>
+      <email>jcm@hsu-hh.de</email>
+      <uri>https://www.hsu-hh.de/laft/mariscaljc</uri>
+    </author>
     <category citation-format="numeric"/>
     <category field="generic-base"/>
     <summary>Based on the template Springer - Basic (numeric, brackets)</summary>
