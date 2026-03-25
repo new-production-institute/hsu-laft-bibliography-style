@@ -15,6 +15,7 @@ To year-grouped format:
 """
 
 import argparse
+import html
 import re
 import sys
 from typing import Optional
@@ -41,6 +42,11 @@ Examples:
         "-o", "--output",
         help="Output file path (default: stdout)",
         default=None,
+    )
+    parser.add_argument(
+        "--html",
+        action="store_true",
+        help="Output formatted bibliography as HTML",
     )
     return parser
 
@@ -135,11 +141,39 @@ def format_all_sections(groups: dict[str, list[str]]) -> str:
     return "\n\n".join(sections)
 
 
-def process_bibliography(text: str) -> str:
+def escape_html_text(text: str) -> str:
+    """Escape text for safe HTML output."""
+    return html.escape(text, quote=True)
+
+
+def format_html_entry(index: int, entry: str) -> str:
+    """Format one bibliography entry as an HTML paragraph."""
+    escaped_entry = escape_html_text(entry)
+    return f"<p>{index}. {escaped_entry}</p>"
+
+
+def format_html_year_section(year: str, entries: list[str]) -> str:
+    """Format a single year section as HTML."""
+    lines = [f"<p><b>{escape_html_text(year)}</b></p>"]
+    for index, entry in enumerate(entries, start=1):
+        lines.append(format_html_entry(index, entry))
+    return "\n".join(lines)
+
+
+def format_all_html_sections(groups: dict[str, list[str]]) -> str:
+    """Format all year sections as HTML."""
+    sorted_years = sort_years_descending(list(groups.keys()))
+    sections = [format_html_year_section(year, groups[year]) for year in sorted_years]
+    return "\n\n".join(sections)
+
+
+def process_bibliography(text: str, as_html: bool = False) -> str:
     """Main processing pipeline: text -> formatted bibliography."""
     lines = split_into_lines(text)
     entries = parse_entries(lines)
     groups = group_by_year(entries)
+    if as_html:
+        return format_all_html_sections(groups)
     return format_all_sections(groups)
 
 
@@ -150,7 +184,7 @@ def main() -> int:
 
     try:
         input_text = read_input(args.input)
-        result = process_bibliography(input_text)
+        result = process_bibliography(input_text, as_html=args.html)
         write_output(args.output, result)
         return 0
     except FileNotFoundError as e:
